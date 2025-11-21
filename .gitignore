@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data files (too large for git)
+yelp_dataset/*.json
+census_dataset/*.csv
+*.pkl
+*.csv
+
+# Logs
+*.log
+api.log
+
+# Keep certain important CSVs (uncomment if needed)
+# !important_file.csv
+
