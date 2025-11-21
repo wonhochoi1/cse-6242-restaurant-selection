@@ -13,28 +13,26 @@ import numpy as np
 from pathlib import Path
 from constants import RESTAURANT_SUBTYPES, AVAILABLE_ZIP_CODES, get_cities, get_zip_codes_for_city
 
-# Initialize FastAPI app
+# FastAPI app
 app = FastAPI(
     title="Restaurant Opportunity Score API",
     description="Predict restaurant 5-year survival probability by location",
     version="1.0.0"
 )
 
-# Add CORS middleware (for frontend integration)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Global variables for model and data
 model = None
 zip_context_df = None
 df_final = None
 
-# Request/Response Models
+# request response models
 class CityOpportunityRequest(BaseModel):
     city: str = Field(..., example="Philadelphia")
     state: Optional[str] = Field(None, example="PA", description="Optional state code for disambiguation")
@@ -63,7 +61,7 @@ class HealthResponse(BaseModel):
     total_zip_codes: int
     available_subtypes: List[str]
 
-# Startup event - load model and data
+#starting event
 @app.on_event("startup")
 async def load_model_and_data():
     """Load the trained model and preprocessed data on startup"""
@@ -72,31 +70,30 @@ async def load_model_and_data():
     try:
         print("Loading model and data...")
         
-        # Load the trained model
+        #load model
         model_path = Path("model/xgboost_untuned_model.pkl")
         if not model_path.exists():
             raise FileNotFoundError(f"Model file not found: {model_path}")
         model = joblib.load(model_path)
         print(f"✓ Model loaded from {model_path}")
         
-        # Load preprocessed data (with zip_code as string)
+        #load preprocessed data
         data_path = Path("restaurant_row_data.csv")
         if not data_path.exists():
             raise FileNotFoundError(f"Data file not found: {data_path}")
         df_final = pd.read_csv(data_path, dtype={'zip_code': str})
-        print(f"✓ Data loaded: {df_final.shape}")
+        print(f"Data loaded: {df_final.shape}")
         
-        # Create context lookup table
+        #create context lookup table
         user_input_cols = ['subtype', 'price_range', 'five_year_survivor']
         context_cols = [c for c in df_final.columns if c not in user_input_cols]
         zip_context_df = df_final[context_cols].drop_duplicates(subset=['zip_code']).set_index('zip_code')
-        print(f"✓ Context lookup created for {len(zip_context_df)} zip codes")
+        print(f"Context lookup created for {len(zip_context_df)} zip codes")
         
-        print(f"✓ Constants loaded: {len(RESTAURANT_SUBTYPES)} subtypes, {len(AVAILABLE_ZIP_CODES)} zip codes")
-        print("✓ Startup complete!")
+        print(f"Constants loaded: {len(RESTAURANT_SUBTYPES)} subtypes, {len(AVAILABLE_ZIP_CODES)} zip codes")
+        print("Startup complete")
         
     except Exception as e:
-        print(f"✗ Error during startup: {e}")
         raise
 
 # Health check endpoint
@@ -111,34 +108,29 @@ async def health_check():
         "available_subtypes": RESTAURANT_SUBTYPES
     }
 
-# Helper function: Predict opportunity score for a single zip code
 def predict_single_zip(zip_code: str, subtype: str, price_range: float) -> Optional[dict]:
     """
     Predict opportunity score for a single zip code
     Returns None if prediction fails
     """
     try:
-        # Ensure zip_code is string
         zip_code = str(zip_code).strip()
         
-        # Check if zip code exists
         if zip_code not in zip_context_df.index:
             return None
         
-        # Get background context for this zip code
+
         context_data = zip_context_df.loc[zip_code].copy()
         
-        # Create input row for the model
+
         input_row = pd.DataFrame([context_data])
         input_row['zip_code'] = zip_code
         input_row['subtype'] = subtype
         input_row['price_range'] = float(price_range)
-        
-        # Make prediction (probability of survival)
+
         probability = model.predict_proba(input_row)[0][1]
         score_percent = round(probability * 100, 1)
         
-        # Categorize
         if score_percent >= 70:
             rating = "High Opportunity"
         elif score_percent >= 50:
@@ -159,7 +151,7 @@ def predict_single_zip(zip_code: str, subtype: str, price_range: float) -> Optio
         return None
 
 
-# Main prediction endpoint - by city
+# main prediction endpoint - by city
 @app.post("/predict", response_model=OpportunityResponse)
 async def predict_by_city(request: CityOpportunityRequest):
     """
@@ -175,11 +167,9 @@ async def predict_by_city(request: CityOpportunityRequest):
     - List of opportunity scores for each zip code in the city
     """
     
-    # Validate model and data are loaded
     if model is None or df_final is None or zip_context_df is None:
         raise HTTPException(status_code=503, detail="Model or data not loaded")
     
-    # Get zip codes for the city
     zip_codes = get_zip_codes_for_city(request.city, request.state)
     
     if not zip_codes:
@@ -190,7 +180,7 @@ async def predict_by_city(request: CityOpportunityRequest):
                    ". Try adding a state code or check /cities for available cities."
         )
     
-    # Predict for each zip code
+
     results = []
     for zip_code in zip_codes:
         prediction = predict_single_zip(zip_code, request.subtype, request.price_range)
@@ -216,4 +206,3 @@ async def predict_by_city(request: CityOpportunityRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

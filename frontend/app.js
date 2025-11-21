@@ -1,8 +1,8 @@
-// Restaurant Opportunity Score Analyzer - Frontend Application
-// API Configuration
+//frontend app for restaurant - vanilla javascript
+
+//use to test api in local host
 const API_BASE_URL = 'http://localhost:8000';
 
-// Constants
 const CITIES = [
     { city: "Philadelphia", state: "PA", zip_count: 71 },
     { city: "Tampa Bay", state: "FL", zip_count: 59 },
@@ -23,24 +23,21 @@ const RESTAURANT_TYPES = [
     "Seafood", "Steakhouse", "Thai", "Vietnamese"
 ];
 
-// State management
 let currentResults = null;
 let currentView = 'map';
 
-// Color scale for opportunity scores (0-100%)
 const colorScale = d3.scaleThreshold()
     .domain([30, 40, 50, 60, 70, 80])
     .range([
-        "#e74c3c",  // Red (< 30%: Very Low)
-        "#e67e22",  // Orange (30-40%: Low)
-        "#f39c12",  // Yellow-orange (40-50%: Below Average)
-        "#f1c40f",  // Yellow (50-60%: Average)
-        "#2ecc71",  // Light green (60-70%: Above Average)
-        "#27ae60",  // Green (70-80%: High)
-        "#16a085"   // Dark green (> 80%: Very High)
+        "#e74c3c",  // red
+        "#e67e22",  // orange
+        "#f39c12",  // yellow/orange
+        "#f1c40f",  // yellow
+        "#2ecc71",  // light green
+        "#27ae60",  // green
+        "#16a085"   // dark green
     ]);
 
-// State-specific GeoJSON URLs
 const STATE_GEOJSON_URLS = {
     'PA': 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/pa_pennsylvania_zip_codes_geo.min.json',
     'FL': 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/fl_florida_zip_codes_geo.min.json',
@@ -52,18 +49,15 @@ const STATE_GEOJSON_URLS = {
     'NV': 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/nv_nevada_zip_codes_geo.min.json'
 };
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeDropdowns();
     setupEventListeners();
 });
 
-// Initialize dropdowns with data
 function initializeDropdowns() {
     const citySelect = document.getElementById('city-select');
     const subtypeSelect = document.getElementById('subtype-select');
     
-    // Populate cities
     CITIES.forEach(city => {
         const option = document.createElement('option');
         option.value = JSON.stringify({ city: city.city, state: city.state });
@@ -71,7 +65,6 @@ function initializeDropdowns() {
         citySelect.appendChild(option);
     });
     
-    // Populate restaurant types
     RESTAURANT_TYPES.forEach(type => {
         const option = document.createElement('option');
         option.value = type;
@@ -80,14 +73,13 @@ function initializeDropdowns() {
     });
 }
 
-// Setup event listeners
 function setupEventListeners() {
     const citySelect = document.getElementById('city-select');
     const subtypeSelect = document.getElementById('subtype-select');
     const priceRange = document.getElementById('price-range');
     const analyzeBtn = document.getElementById('analyze-btn');
     
-    // Enable analyze button when all fields are selected
+
     function checkFormValidity() {
         const isValid = citySelect.value && subtypeSelect.value && priceRange.value;
         analyzeBtn.disabled = !isValid;
@@ -96,12 +88,11 @@ function setupEventListeners() {
     citySelect.addEventListener('change', checkFormValidity);
     subtypeSelect.addEventListener('change', checkFormValidity);
     priceRange.addEventListener('change', checkFormValidity);
-    
-    // Analyze button click
+
     analyzeBtn.addEventListener('click', handleAnalyze);
 }
 
-// Handle analyze button click
+// when button is clicked, call API for scores, display
 async function handleAnalyze() {
     const citySelect = document.getElementById('city-select');
     const subtypeSelect = document.getElementById('subtype-select');
@@ -111,22 +102,19 @@ async function handleAnalyze() {
     const subtype = subtypeSelect.value;
     const price = parseFloat(priceRange.value);
     
-    // Show loading state
     showLoading();
     
     try {
-        // Call API
         const results = await fetchOpportunityScores(cityData.city, cityData.state, subtype, price);
         currentResults = results;
         
-        // Display results
         await displayResults(results, cityData);
     } catch (error) {
         showError(error.message);
     }
 }
 
-// Fetch opportunity scores from API
+//post request - gets actual scores from API
 async function fetchOpportunityScores(city, state, subtype, priceRange) {
     const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
@@ -143,13 +131,12 @@ async function fetchOpportunityScores(city, state, subtype, priceRange) {
     
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Failed to fetch opportunity scores');
+        throw new Error(error.detail);
     }
     
     return await response.json();
 }
 
-// Show loading state
 function showLoading() {
     const resultsSection = document.getElementById('results-section');
     resultsSection.innerHTML = `
@@ -161,28 +148,25 @@ function showLoading() {
     `;
 }
 
-// Show error message
 function showError(message) {
     const resultsSection = document.getElementById('results-section');
     resultsSection.innerHTML = `
         <div class="error-message">
-            <h3>❌ Error</h3>
+            <h3>Error</h3>
             <p>${message}</p>
         </div>
     `;
 }
 
-// Display results
+//function + html for results UI
 async function displayResults(results, cityData) {
     const resultsSection = document.getElementById('results-section');
     
-    // Calculate statistics
     const scores = results.zip_scores.map(z => z.score_percent);
     const avgScore = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     const maxScore = Math.max(...scores).toFixed(1);
     const highOpportunity = results.zip_scores.filter(z => z.score_percent >= 70).length;
     
-    // Create results HTML
     resultsSection.innerHTML = `
         <div class="info-message">
             <strong>Results for ${results.city}, ${results.state}</strong><br>
@@ -209,8 +193,8 @@ async function displayResults(results, cityData) {
         </div>
         
         <div class="view-toggle">
-            <button class="view-btn active" data-view="map">🗺️ Map View</button>
-            <button class="view-btn" data-view="list">📋 List View</button>
+            <button class="view-btn active" data-view="map">Map View</button>
+            <button class="view-btn" data-view="list">List View</button>
         </div>
         
         <div id="visualization-container">
@@ -227,7 +211,6 @@ async function displayResults(results, cityData) {
         </div>
     `;
     
-    // Setup view toggle
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -247,21 +230,17 @@ async function displayResults(results, cityData) {
         });
     });
     
-    // Create legend
     createLegend();
     
-    // Try to render map, fallback to list if it fails
     try {
         await renderChoroplethMap(results, cityData);
     } catch (error) {
         console.error('Map rendering failed:', error);
         showMapError();
-        // Auto-switch to list view
         document.querySelector('[data-view="list"]').click();
     }
 }
 
-// Create legend
 function createLegend() {
     const legendContainer = d3.select("#legend");
     legendContainer.selectAll("*").remove();
@@ -293,28 +272,24 @@ function createLegend() {
     });
 }
 
-// Render choropleth map
+//uses d3.js for choropleth map
 async function renderChoroplethMap(results, cityData) {
     const stateCode = cityData.state;
     const geoJsonUrl = STATE_GEOJSON_URLS[stateCode];
     
     if (!geoJsonUrl) {
-        throw new Error(`No GeoJSON data available for state: ${stateCode}`);
+        throw new Error(`no geojson data available for state: ${stateCode}`);
     }
     
-    // Fetch GeoJSON data
     const geoData = await d3.json(geoJsonUrl);
     
-    // Create lookup map
     const scoresByZip = {};
     results.zip_scores.forEach(z => {
         scoresByZip[z.zip_code] = z;
     });
     
-    // Get ZIP codes from results
     const targetZips = new Set(results.zip_scores.map(z => z.zip_code));
     
-    // Filter features to only target ZIP codes
     const targetFeatures = geoData.features.filter(f => {
         const zipCode = f.properties.ZCTA5CE10 || f.properties.ZIP || f.properties.GEOID10;
         return targetZips.has(String(zipCode));
@@ -324,7 +299,6 @@ async function renderChoroplethMap(results, cityData) {
         throw new Error('No matching ZIP codes found in GeoJSON data');
     }
     
-    // Setup SVG
     const container = document.getElementById('map-container');
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -335,24 +309,20 @@ async function renderChoroplethMap(results, cityData) {
     
     svg.selectAll("*").remove();
     
-    // Create group for zooming
     const g = svg.append("g");
     const zipCodesGroup = g.append("g");
     
-    // Create tooltip
     const tooltip = d3.select("body")
         .append("div")
         .attr("class", "tooltip")
         .style("position", "absolute")
         .style("display", "none");
     
-    // Setup projection
     const projection = d3.geoMercator()
         .fitSize([width, height], { type: "FeatureCollection", features: targetFeatures });
     
     const path = d3.geoPath().projection(projection);
     
-    // Setup zoom
     const zoom = d3.zoom()
         .scaleExtent([1, 10])
         .on("zoom", function() {
@@ -361,7 +331,6 @@ async function renderChoroplethMap(results, cityData) {
     
     svg.call(zoom);
     
-    // Draw ZIP codes
     zipCodesGroup.selectAll("path")
         .data(targetFeatures)
         .enter()
@@ -404,7 +373,7 @@ async function renderChoroplethMap(results, cityData) {
             tooltip.style("display", "none");
         });
     
-    // Auto-fit to bounds
+
     const bounds = path.bounds({ type: "FeatureCollection", features: targetFeatures });
     const dx = bounds[1][0] - bounds[0][0];
     const dy = bounds[1][1] - bounds[0][1];
@@ -418,25 +387,22 @@ async function renderChoroplethMap(results, cityData) {
         .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 
-// Show map error
 function showMapError() {
     const mapContainer = document.getElementById('map-container');
     mapContainer.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6c757d; text-align: center; padding: 40px;">
             <div>
-                <h3>⚠️ Map View Unavailable</h3>
+                <h3>Map View Unavailable</h3>
                 <p>Unable to load map visualization. Please use the List View instead.</p>
             </div>
         </div>
     `;
 }
 
-// Render list view
 function renderListView(results) {
     const listContainer = document.getElementById('zip-list');
     listContainer.innerHTML = '';
     
-    // Sort by score (highest first)
     const sortedScores = [...results.zip_scores].sort((a, b) => b.score_percent - a.score_percent);
     
     sortedScores.forEach(zipData => {

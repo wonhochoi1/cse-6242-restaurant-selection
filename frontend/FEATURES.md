@@ -74,13 +74,13 @@ Switch between:
 ### 6. Color Coding System
 
 **Score-based Colors**:
-- 🟢 Dark Green (80-100%): Very High Opportunity
-- 🟢 Green (70-80%): High Opportunity
-- 🟢 Light Green (60-70%): Above Average
-- 🟡 Yellow (50-60%): Average
-- 🟠 Orange (40-50%): Below Average
-- 🟠 Orange-Red (30-40%): Low
-- 🔴 Red (<30%): Very Low
+- Dark Green (80-100%): Very High Opportunity
+- Green (70-80%): High Opportunity
+- Light Green (60-70%): Above Average
+- Yellow (50-60%): Average
+- Orange (40-50%): Below Average
+- Orange-Red (30-40%): Low
+- Red (<30%): Very Low
 
 ### 7. Loading States
 
@@ -227,35 +227,6 @@ Switch between:
 - `renderChoroplethMap()`: D3.js map rendering
 - `renderListView()`: Creates card grid
 - `createLegend()`: Builds color scale legend
-
-## Browser Compatibility
-
-### Supported Browsers
-
-✅ **Chrome 90+**
-- Full feature support
-- Optimal performance
-- Best visualization quality
-
-✅ **Firefox 88+**
-- Full feature support
-- Good performance
-- Accurate rendering
-
-✅ **Safari 14+**
-- Full feature support
-- Native performance
-- Smooth animations
-
-✅ **Edge 90+**
-- Full feature support
-- Chromium-based
-- Excellent compatibility
-
-❌ **Internet Explorer**
-- Not supported
-- Missing ES6 features
-- No fallback provided
 
 ### Feature Detection
 

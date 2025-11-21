@@ -1,4 +1,4 @@
-# 🍽️ Restaurant Opportunity Score Analyzer
+# Restaurant Opportunity Score Analyzer
 
 **CSE 6242 Team 022** - Predicting Restaurant Success by Location
 
@@ -10,7 +10,7 @@ A full-stack machine learning application that predicts 5-year restaurant surviv
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 This application helps entrepreneurs and investors identify optimal locations for restaurant businesses by analyzing:
 - **Economic Indicators**: Median income, employment rates, education levels
@@ -22,19 +22,19 @@ This application helps entrepreneurs and investors identify optimal locations fo
 
 ---
 
-## ✨ Features
+## Features
 
-- 🗺️ **Interactive Choropleth Maps** - D3.js visualizations with color-coded ZIP codes
-- 📊 **Real-time Predictions** - FastAPI backend with XGBoost ML model
-- 🎨 **Modern UI** - Responsive web interface with gradient design
-- 📋 **Dual Views** - Map view and sortable list view
-- 🏙️ **10 Major Cities** - Philadelphia, Tampa, St. Louis, Indianapolis, Nashville, New Orleans, Tucson, St. Petersburg, Reno
-- 🍕 **21 Restaurant Types** - All major cuisines and price ranges ($-$$$$)
-- 📈 **Statistics Dashboard** - Key metrics and insights at a glance
+- **Interactive Choropleth Maps** - D3.js visualizations with color-coded ZIP codes
+- **Real-time Predictions** - FastAPI backend with XGBoost ML model
+- **Modern UI** - Responsive web interface with gradient design
+- **Dual Views** - Map view and sortable list view
+- **10 Major Cities** - Philadelphia, Tampa, St. Louis, Indianapolis, Nashville, New Orleans, Tucson, St. Petersburg, Reno
+- **21 Restaurant Types** - All major cuisines and price ranges ($-$$$$)
+- **Statistics Dashboard** - Key metrics and insights at a glance
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8+
@@ -78,7 +78,7 @@ http://localhost:8080
 
 ---
 
-## 📖 Usage
+## Usage
 
 1. **Select a City** (e.g., Philadelphia, PA)
 2. **Choose Restaurant Type** (e.g., Italian, Mexican, Chinese)
@@ -95,7 +95,7 @@ http://localhost:8080
 
 ---
 
-## 🎨 Screenshots
+## Screenshots
 
 *The application features:*
 - Purple gradient modern interface
@@ -128,7 +128,7 @@ http://localhost:8080
 
 ---
 
-## 📊 Model Performance
+## Model Performance
 
 - **Algorithm**: XGBoost Gradient Boosting Classifier
 - **Accuracy**: ~82%
@@ -138,7 +138,7 @@ http://localhost:8080
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 cse-6242-restaurant-selection/
@@ -164,7 +164,7 @@ cse-6242-restaurant-selection/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Activate virtual environment
@@ -178,9 +178,9 @@ python test_api.py
 
 ---
 
-## 📚 Documentation
+## Documentation
 
-- **[SETUP.md](SETUP.md)** - Detailed setup instructions
+- **[SETUP.md](SETUP.md)** - setup instructions
 - **[STATUS_UPDATE.md](STATUS_UPDATE.md)** - Project status and accomplishments
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command cheat sheet
 - **[frontend/README.md](frontend/README.md)** - Frontend documentation
@@ -188,7 +188,7 @@ python test_api.py
 
 ---
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Health Check
 ```http
@@ -212,7 +212,7 @@ Content-Type: application/json
 
 ---
 
-## 🎓 Academic Context
+## Academic Context
 
 **Course**: CSE 6242 - Data and Visual Analytics  
 **Institution**: Georgia Institute of Technology  
@@ -221,7 +221,7 @@ Content-Type: application/json
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 This is an academic project for CSE 6242. For questions or suggestions:
 
@@ -232,7 +232,7 @@ This is an academic project for CSE 6242. For questions or suggestions:
 
 ---
 
-## ⚠️ Known Limitations
+## Limitations
 
 - Limited to 10 cities (814 ZIP codes)
 - Fixed restaurant categories (21 types)
@@ -241,42 +241,9 @@ This is an academic project for CSE 6242. For questions or suggestions:
 
 ---
 
-## 🚀 Future Enhancements
-
-- [ ] Add more cities and expand dataset
-- [ ] Export results to CSV/PDF
-- [ ] Comparison mode (compare multiple cities)
-- [ ] Time-series predictions
-- [ ] Mobile application
-- [ ] User authentication
-
----
-
 ## 📄 License
 
 This project is submitted as part of CSE 6242 coursework at Georgia Tech.
-
----
-
-## 🙏 Acknowledgments
-
-- **Yelp** - Open Dataset
-- **U.S. Census Bureau** - Demographic data
-- **OpenDataDE** - ZIP code GeoJSON data
-- **D3.js** - Visualization library
-
----
-
-## 📞 Support
-
-For setup issues:
-1. Run `python verify_setup.py`
-2. Check [SETUP.md](SETUP.md) troubleshooting section
-3. Review browser console (F12) for errors
-4. Ensure both backend and frontend are running
-
 ---
 
 **Built with ❤️ by CSE 6242 Team 022**
-
-*Predicting restaurant success, one ZIP code at a time.*
