@@ -106,7 +106,7 @@ http://localhost:8080
 
 ---
 
-## 🔧 Technology Stack
+## Technology Stack
 
 ### Frontend
 - HTML5, CSS3 (Grid, Flexbox, Animations)
