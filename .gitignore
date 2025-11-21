@@ -27,7 +27,6 @@ build/
 yelp_dataset/*.json
 census_dataset/*.csv
 *.pkl
-*.csv
 
 # Logs
 *.log
