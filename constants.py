@@ -4,7 +4,6 @@ Hardcoded values from the restaurant_row_data.csv dataset.
 Only includes the top 10 cities with the most data points and zip codes.
 """
 
-# Available restaurant subtypes (21 types)
 RESTAURANT_SUBTYPES = [
     "American",
     "Breakfast",
@@ -29,7 +28,6 @@ RESTAURANT_SUBTYPES = [
     "Vietnamese",
 ]
 
-# Available zip codes (814 zip codes across all cities in dataset)
 AVAILABLE_ZIP_CODES = [
     "07836", "07882", "08001", "08002", "08003", "08004", "08005", "08007", "08009", "08010",
     "08012", "08016", "08020", "08021", "08022", "08026", "08027", "08028", "08029", "08030",
@@ -115,9 +113,7 @@ AVAILABLE_ZIP_CODES = [
     "93117", "95050", "95661", "96161"
 ]
 
-# Top 10 cities with the most data
-# City to zip code mapping
-# Format: {'city|state': ['zip1', 'zip2', ...]}
+
 CITY_TO_ZIP_MAP = {
     "philadelphia|PA": ['08102', '08340', '18976', '19003', '19004', '19006', '19010', '19012', '19014', '19020', '19023', '19027', '19046', '19072', '19087', '19090', '19096', '19102', '19103', '19104', '19106', '19107', '19108', '19111', '19114', '19115', '19116', '19118', '19119', '19120', '19121', '19122', '19123', '19124', '19125', '19126', '19127', '19128', '19129', '19130', '19131', '19132', '19133', '19134', '19135', '19136', '19137', '19138', '19139', '19140', '19141', '19142', '19143', '19144', '19145', '19146', '19147', '19148', '19149', '19150', '19151', '19152', '19153', '19154', '19341', '19401', '19406', '19428', '19444', '19446', '19454'],
     "tampa bay|FL": ['33511', '33543', '33544', '33547', '33548', '33549', '33556', '33558', '33559', '33578', '33579', '33594', '33596', '33602', '33604', '33605', '33606', '33607', '33609', '33611', '33612', '33613', '33614', '33615', '33617', '33619', '33624', '33625', '33626', '33629', '33635', '33637', '33647', '33707', '33755', '33756', '33759', '33761', '33762', '33763', '33765', '33767', '33770', '33771', '33772', '33774', '33778', '34639', '34652', '34653', '34655', '34668', '34677', '34683', '34684', '34685', '34689', '34691', '34698'],
@@ -131,7 +127,6 @@ CITY_TO_ZIP_MAP = {
     "reno|NV": ['89431', '89433', '89434', '89436', '89439', '89441', '89501', '89502', '89503', '89506', '89508', '89509', '89511', '89512', '89519', '89521', '89523', '89557', '89704']
 }
 
-# City names for display
 TOP_CITIES = [
     {"city": "Philadelphia", "state": "PA", "zip_count": 71},
     {"city": "Tampa Bay", "state": "FL", "zip_count": 59},
@@ -152,15 +147,13 @@ def get_cities():
 def get_zip_codes_for_city(city: str, state: str = None):
     """Get zip codes for a specific city"""
     city_normalized = city.strip().lower()
-    
-    # Try with state first if provided
+
     if state:
         state_normalized = state.strip().upper()
         key = f"{city_normalized}|{state_normalized}"
         if key in CITY_TO_ZIP_MAP:
             return CITY_TO_ZIP_MAP[key]
     
-    # Try without state (find first match)
     for key, zip_codes in CITY_TO_ZIP_MAP.items():
         if key.startswith(f"{city_normalized}|"):
             return zip_codes

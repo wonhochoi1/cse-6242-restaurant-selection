@@ -4,7 +4,7 @@ Complete step-by-step instructions to get the application running from scratch.
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before starting, ensure you have:
 
@@ -19,12 +19,11 @@ Before starting, ensure you have:
 
 ```bash
 python3 --version
-# Should show: Python 3.x.x (where x >= 8)
 ```
 
 ---
 
-## 🚀 Quick Setup (5 Minutes)
+## Quick Setup
 
 ### Option 1: If Virtual Environment Already Exists
 
@@ -55,7 +54,7 @@ python -m http.server 8080
 
 ---
 
-## 🔧 Complete Setup (From Scratch)
+## Complete Setup (From Scratch)
 
 ### Step 1: Clone and Navigate to Project
 
@@ -65,7 +64,7 @@ git clone <repository-url>
 cd cse-6242-restaurant-selection
 ```
 
-### Step 2: Create Virtual Environment (If Needed)
+### Step 2: Create Virtual Environment
 
 ```bash
 # Create venv
@@ -107,26 +106,12 @@ pip install -r requirements.txt
 python verify_setup.py
 ```
 
-**Expected output**:
-```
-✓ API Server
-✓ Constants Module
-✓ Restaurant Data
-✓ ML Model
-✓ Requirements File
-✓ Model Directory
-✓ Frontend HTML
-✓ Frontend JavaScript
-✓ Frontend README
-✅ All essential checks passed!
-```
-
 If any checks fail, see [Troubleshooting](#-troubleshooting) section.
 
 ### Step 5: Start Backend API
 
 ```bash
-# Make sure venv is activated (you should see (venv) in prompt)
+
 python api.py
 ```
 
@@ -153,11 +138,6 @@ source venv/bin/activate
 python test_api.py
 ```
 
-**Expected output**:
-```
-✅ Integration tests complete!
-```
-
 ### Step 7: Start Frontend Server
 
 In a **new terminal** (keep API running in first terminal):
@@ -182,7 +162,7 @@ You should see the Restaurant Opportunity Score Analyzer interface!
 
 ---
 
-## 🎯 Verification Checklist
+## Verification Checklist
 
 After setup, verify everything works:
 
@@ -198,7 +178,7 @@ After setup, verify everything works:
 
 ---
 
-## 📖 Using the Application
+## Using the Application
 
 ### Basic Workflow
 
@@ -259,27 +239,15 @@ After setup, verify everything works:
 
 ---
 
-## 🛑 Stopping the Application
+## Stopping the Application
 
 When you're done:
-
-### Method 1: Graceful Shutdown
 
 1. Go to terminal running frontend
    - Press `Ctrl+C`
 
 2. Go to terminal running API
    - Press `Ctrl+C`
-
-### Method 2: Force Kill (if needed)
-
-```bash
-# Kill API (port 8000)
-lsof -ti:8000 | xargs kill -9
-
-# Kill Frontend (port 8080)
-lsof -ti:8080 | xargs kill -9
-```
 
 ---
 
@@ -412,11 +380,6 @@ curl -X POST "http://localhost:8000/predict" \
 python test_api.py
 ```
 
-Should output:
-```
-✅ Integration tests complete!
-```
-
 ---
 
 ## 📁 Project Structure
@@ -445,7 +408,7 @@ cse-6242-restaurant-selection/
 
 ---
 
-## 🔄 Restarting After System Reboot
+## Restarting After System Reboot
 
 If you restart your computer or open a new terminal session:
 
@@ -469,7 +432,7 @@ python -m http.server 8080
 
 ---
 
-## 🌐 Accessing from Other Devices (Optional)
+## Accessing from Other Devices (Optional)
 
 To access from other devices on same network:
 
@@ -501,7 +464,7 @@ http://YOUR_IP_ADDRESS:8080
 
 ---
 
-## 🚀 Advanced Configuration
+## Advanced Configuration
 
 ### Changing Ports
 
@@ -540,7 +503,7 @@ Edit CSS in `frontend/index.html` within `<style>` tags:
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **API Documentation**: http://localhost:8000/docs (when API running)
 - **Frontend Docs**: `frontend/README.md`
@@ -590,49 +553,12 @@ If live demo fails:
 
 ---
 
-## ✅ Success Criteria
-
-You're ready when:
-
-- [x] API starts without errors
-- [x] Frontend loads in browser
-- [x] Can select all three parameters
-- [x] Button clicks successfully
-- [x] Results appear in 3-5 seconds
-- [x] Can view both map and list
-- [x] Tests pass: `python test_frontend_integration.py`
-
----
-
-## 📞 Getting Help
-
-1. **Check logs**:
-   - API: Check terminal running `python api.py`
-   - Frontend: Check browser console (F12)
-
-2. **Run diagnostics**:
-   ```bash
-   python verify_setup.py
-   ```
-
-3. **Check specific issues**:
-   - API health: http://localhost:8000
-   - API docs: http://localhost:8000/docs
-   - Frontend: View page source
-
-4. **Review documentation**:
-   - This file (SETUP.md)
-   - STATUS_UPDATE.md
-   - frontend/README.md
-
----
-
-## 🎉 You're All Set!
+## Success Criteria
 
 If you've followed all steps:
-- ✅ Backend is running on port 8000
-- ✅ Frontend is running on port 8080
-- ✅ Application is accessible at http://localhost:8080
+- Backend is running on port 8000
+- Frontend is running on port 8080
+- Application is accessible at http://localhost:8080
 
 **Start using the application and explore restaurant opportunities!**
 

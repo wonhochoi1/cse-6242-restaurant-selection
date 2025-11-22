@@ -1,6 +1,6 @@
 # Quick Reference Card
 
-## 🚀 Start Everything (2 Commands)
+## Start Everything (2 Commands)
 
 **Terminal 1 - Backend:**
 ```bash
@@ -19,7 +19,7 @@ python -m http.server 8080
 
 ---
 
-## 🛑 Stop Everything
+## Stop Everything
 
 ```bash
 # Kill API
@@ -31,7 +31,7 @@ lsof -ti:8080 | xargs kill -9
 
 ---
 
-## 🧪 Test Everything
+## Test Everything
 
 ```bash
 cd cse-6242-restaurant-selection
@@ -41,7 +41,7 @@ python test_api.py
 
 ---
 
-## 🔍 Check Status
+## Check Status
 
 ```bash
 # Check API
@@ -56,7 +56,7 @@ python verify_setup.py
 
 ---
 
-## 📊 URLs
+## URLs
 
 - **Frontend**: http://localhost:8080
 - **API**: http://localhost:8000
@@ -73,7 +73,7 @@ python verify_setup.py
 
 ---
 
-## 🎯 Example Test Case
+## Example Test Case
 
 1. City: **Philadelphia, PA**
 2. Type: **Italian**
@@ -82,7 +82,7 @@ python verify_setup.py
 
 ---
 
-## 🆘 Common Issues
+## Common Issues
 
 | Problem | Solution |
 |---------|----------|
@@ -93,7 +93,7 @@ python verify_setup.py
 
 ---
 
-## ⚡ One-Liner Commands
+## One-Liner Commands
 
 ```bash
 # Check API health
@@ -116,7 +116,7 @@ lsof -ti:8000 | xargs kill -9; lsof -ti:8080 | xargs kill -9; \
 
 ---
 
-## 📋 Pre-Demo Checklist
+## Pre-Demo Checklist
 
 - [ ] API running (`python api.py`)
 - [ ] Frontend running (`python -m http.server 8080`)
