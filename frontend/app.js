@@ -389,6 +389,22 @@ async function renderChoroplethMap(results, cityData) {
                     Rating: <strong>${data.rating}</strong><br/>
                     Type: ${data.restaurant_type}
                 `;
+                
+                // Add top 2 SHAP features if available (with plain language)
+                if (data.top_features && data.top_features.length > 0) {
+                    tooltipHtml += `<br/><div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">`;
+                    tooltipHtml += `<strong style="font-size: 11px; color: #3498db;">Why ${data.score_percent}%:</strong><br/>`;
+                    tooltipHtml += `<div style="font-size: 9px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">✓ increases • ✗ decreases opportunity</div>`;
+                    
+                    data.top_features.slice(0, 2).forEach(feat => {
+                        const isPositive = feat.value > 0;
+                        const icon = isPositive ? '✓' : '✗';
+                        const color = isPositive ? '#2ecc71' : '#e74c3c';
+                        const description = getFeatureDescription(feat.name, feat.value);
+                        tooltipHtml += `<div style="font-size: 10px; margin: 3px 0; line-height: 1.3;"><span style="color: ${color}; font-weight: bold;">${icon}</span> <span style="color: rgba(255,255,255,0.9);">${description}</span></div>`;
+                    });
+                    tooltipHtml += `</div>`;
+                }
             } else {
                 tooltipHtml += `No data available`;
             }
@@ -431,6 +447,113 @@ function showMapError() {
     `;
 }
 
+// Convert feature name to plain language description
+function getFeatureDescription(featureName, value) {
+    const isPositive = value > 0;
+    const absValue = Math.abs(value);
+    const strength = absValue > 0.5 ? 'strongly' : absValue > 0.2 ? 'moderately' : 'slightly';
+    
+    // Restaurant type features
+    if (featureName.startsWith('Restaurant Type: ')) {
+        const cuisine = featureName.replace('Restaurant Type: ', '');
+        return isPositive 
+            ? `${cuisine} restaurants perform well in this area`
+            : `${cuisine} restaurants may struggle in this area`;
+    }
+    
+    // Age of restaurants
+    if (featureName.includes('Age of ') && featureName.includes(' Restaurants')) {
+        const cuisine = featureName.match(/Age of (.+?) Restaurants/)?.[1] || '';
+        return isPositive
+            ? `Existing ${cuisine} restaurants are well-established here`
+            : `Existing ${cuisine} restaurants are relatively new here`;
+    }
+    
+    // Price level
+    if (featureName === 'Price Level') {
+        return isPositive
+            ? `Your selected price level matches this area well`
+            : `Your selected price level may be too high or low for this area`;
+    }
+    
+    // Average price of restaurants
+    if (featureName.includes('Average Price of ')) {
+        const cuisine = featureName.replace('Average Price of ', '').replace(' Restaurants', '');
+        return isPositive
+            ? `Average prices for ${cuisine} restaurants align well here`
+            : `Average prices for ${cuisine} restaurants differ from your selection`;
+    }
+    
+    // Average rating
+    if (featureName.includes('Average Rating')) {
+        return isPositive
+            ? `Restaurants in this area have good ratings`
+            : `Restaurant ratings in this area are lower`;
+    }
+    
+    // Competition density
+    if (featureName === 'Competition Density') {
+        return isPositive
+            ? `Healthy competition level (not oversaturated)`
+            : `High competition may make it harder to succeed`;
+    }
+    
+    // Population features
+    if (featureName.includes('Population')) {
+        return isPositive
+            ? `Good population density supports restaurant demand`
+            : `Lower population may limit customer base`;
+    }
+    
+    // Number of restaurants
+    if (featureName.includes('Number of ') || featureName.includes('Total Restaurants')) {
+        return isPositive
+            ? `Healthy restaurant ecosystem in this area`
+            : `Fewer restaurants in area (may indicate lower demand)`;
+    }
+    
+    // Default fallback
+    return isPositive
+        ? `${featureName} ${strength} increases opportunity`
+        : `${featureName} ${strength} decreases opportunity`;
+}
+
+// Display SHAP feature importance with plain language
+function displaySHAP(zipData) {
+    if (!zipData.top_features || zipData.top_features.length === 0) return '';
+    
+    let html = '<div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">';
+    html += `<div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; color: #495057;">Why this location scored ${zipData.score_percent}%:</div>`;
+    html += '<div style="font-size: 9px; color: #6c757d; margin-bottom: 8px; font-style: italic;">These factors explain the opportunity score</div>';
+    
+    zipData.top_features.forEach(f => {
+        const isPositive = f.value > 0;
+        const color = isPositive ? '#27ae60' : '#e74c3c';
+        const icon = isPositive ? '✓' : '✗';
+        const barWidth = Math.min(Math.abs(f.value) * 100, 100);
+        const description = getFeatureDescription(f.name, f.value);
+        
+        html += `
+            <div style="margin: 6px 0; font-size: 10px;">
+                <div style="display: flex; align-items: flex-start; margin-bottom: 2px;">
+                    <span style="color: ${color}; margin-right: 6px; width: 12px; font-weight: bold;">${icon}</span>
+                    <span style="flex: 1; color: #333; line-height: 1.4;">${description}</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-left: 18px;">
+                    <div style="width: 50px; height: 4px; background: #eee; margin-right: 6px; border-radius: 2px; overflow: hidden;">
+                        <div style="width: ${barWidth}%; height: 100%; background: ${color};"></div>
+                    </div>
+                    <span style="color: ${color}; font-weight: 600; font-size: 9px;">${f.value > 0 ? '+' : ''}${f.value.toFixed(3)}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '<div style="font-size: 8px; color: #999; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f0f0f0;">✓ = increases opportunity • ✗ = decreases opportunity</div>';
+    
+    return html + '</div>';
+}
+
 // Render list view
 function renderListView(results) {
     const listContainer = document.getElementById('zip-list');
@@ -457,6 +580,7 @@ function renderListView(results) {
             <div class="rating ${ratingClass}">
                 ${zipData.rating}
             </div>
+            ${displaySHAP(zipData)}
         `;
         
         listContainer.appendChild(card);

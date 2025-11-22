@@ -11,6 +11,7 @@ import pandas as pd
 import joblib
 import numpy as np
 from pathlib import Path
+import shap
 from constants import RESTAURANT_SUBTYPES, AVAILABLE_ZIP_CODES, get_cities, get_zip_codes_for_city
 
 # Initialize FastAPI app
@@ -33,6 +34,7 @@ app.add_middleware(
 model = None
 zip_context_df = None
 df_final = None
+shap_explainer = None
 
 # Request/Response Models
 class CityOpportunityRequest(BaseModel):
@@ -47,6 +49,7 @@ class ZipCodeScore(BaseModel):
     score_percent: float
     rating: str
     restaurant_type: str
+    top_features: Optional[List[dict]] = None
 
 class OpportunityResponse(BaseModel):
     city: str
@@ -67,7 +70,7 @@ class HealthResponse(BaseModel):
 @app.on_event("startup")
 async def load_model_and_data():
     """Load the trained model and preprocessed data on startup"""
-    global model, zip_context_df, df_final
+    global model, zip_context_df, df_final, shap_explainer
     
     try:
         print("Loading model and data...")
@@ -93,6 +96,20 @@ async def load_model_and_data():
         print(f"✓ Context lookup created for {len(zip_context_df)} zip codes")
         
         print(f"✓ Constants loaded: {len(RESTAURANT_SUBTYPES)} subtypes, {len(AVAILABLE_ZIP_CODES)} zip codes")
+        
+        # Initialize SHAP explainer
+        try:
+            xgb_model = model.named_steps['model']
+            background = df_final.sample(min(50, len(df_final)), random_state=42)
+            bg_processed = model.named_steps['preprocessor'].transform(
+                background.drop(columns=['five_year_survivor'])
+            )
+            shap_explainer = shap.TreeExplainer(xgb_model, bg_processed)
+            print("✓ SHAP explainer initialized")
+        except Exception as e:
+            print(f"⚠️  SHAP explainer not available: {e}")
+            shap_explainer = None
+        
         print("✓ Startup complete!")
         
     except Exception as e:
@@ -110,6 +127,118 @@ async def health_check():
         "total_zip_codes": len(AVAILABLE_ZIP_CODES),
         "available_subtypes": RESTAURANT_SUBTYPES
     }
+
+# Feature name mapping for consumer-friendly display
+def map_feature_name(technical_name: str) -> str:
+    """Map technical feature names to consumer-friendly descriptions"""
+    
+    # One-hot encoded restaurant subtypes
+    if technical_name.startswith('subtype_'):
+        cuisine = technical_name.replace('subtype_', '').replace('_', ' ')
+        return f"Restaurant Type: {cuisine}"
+    
+    # One-hot encoded zip codes (usually not in top features, but handle it)
+    if technical_name.startswith('zip_code_'):
+        zip_code = technical_name.replace('zip_code_', '')
+        return f"Location: ZIP {zip_code}"
+    
+    # Price range
+    if technical_name == 'price_range':
+        return "Price Level"
+    
+    # Competition features by cuisine type
+    cuisine_types = ['American', 'Breakfast', 'Cafe', 'Chinese', 'Dessert', 'Diner', 
+                     'Fast Food', 'French', 'General', 'Greek', 'Indian', 'Italian', 
+                     'Japanese', 'Korean', 'Mediterranean', 'Mexican', 'Pizza', 
+                     'Seafood', 'Steakhouse', 'Thai', 'Vietnamese']
+    
+    for cuisine in cuisine_types:
+        if technical_name.startswith(f'{cuisine}_'):
+            metric = technical_name.replace(f'{cuisine}_', '').replace('_zip', '')
+            
+            metric_map = {
+                'avg_price': f'Average Price of {cuisine} Restaurants',
+                'avg_stars': f'Average Rating of {cuisine} Restaurants',
+                'median_age': f'Age of {cuisine} Restaurants',
+                'median_reviews': f'Review Count of {cuisine} Restaurants',
+                'total_count': f'Number of {cuisine} Restaurants'
+            }
+            
+            if metric in metric_map:
+                return metric_map[metric]
+            return f"{cuisine} Restaurant: {metric.replace('_', ' ').title()}"
+    
+    # ZIP-level aggregates
+    zip_metrics = {
+        'zip_avg_star_rating': 'Average Restaurant Rating in Area',
+        'zip_median_review_count': 'Typical Review Count in Area',
+        'zip_avg_price_range': 'Average Price Level in Area',
+        'zip_median_business_age': 'Typical Restaurant Age in Area',
+        'zip_total_restaurants': 'Total Restaurants in Area'
+    }
+    
+    if technical_name in zip_metrics:
+        return zip_metrics[technical_name]
+    
+    # Demographics
+    demo_map = {
+        'total_population': 'Total Population',
+        'median_age': 'Median Age of Residents',
+        'white_population': 'White Population',
+        'black_population': 'Black Population',
+        'asian_population': 'Asian Population',
+        'hispanic_population': 'Hispanic Population',
+        'pct_white': 'White Population %',
+        'pct_black': 'Black Population %',
+        'pct_asian': 'Asian Population %',
+        'pct_hispanic': 'Hispanic Population %'
+    }
+    
+    if technical_name in demo_map:
+        return demo_map[technical_name]
+    
+    # Engineered features
+    engineered_map = {
+        'competition_density': 'Competition Density',
+        'market_share_of_competition': 'Market Share of Similar Restaurants',
+        'population_per_restaurant': 'People per Restaurant'
+    }
+    
+    if technical_name in engineered_map:
+        return engineered_map[technical_name]
+    
+    # Fallback: clean up the name
+    return technical_name.replace('_', ' ').title()
+
+# Helper function: Compute SHAP values for a prediction
+def compute_shap(input_row):
+    """Compute top 5 SHAP features for a prediction"""
+    if shap_explainer is None:
+        return None
+    try:
+        preprocessed = model.named_steps['preprocessor'].transform(input_row)
+        shap_vals = shap_explainer.shap_values(preprocessed)
+        if isinstance(shap_vals, list):
+            shap_vals = shap_vals[1]  # Binary classification, use positive class
+        shap_vals = shap_vals[0]
+        
+        # Get feature names
+        try:
+            preprocessor = model.named_steps['preprocessor']
+            # Get numerical feature names
+            num_features = preprocessor.named_transformers_['num'].feature_names_in_
+            # Get categorical feature names after one-hot encoding
+            cat_features = preprocessor.named_transformers_['cat'].get_feature_names_out()
+            feature_names = list(num_features) + list(cat_features)
+        except:
+            feature_names = [f"feature_{i}" for i in range(len(shap_vals))]
+        
+        features = [{"name": map_feature_name(str(name)), "value": float(val)} 
+                    for name, val in zip(feature_names, shap_vals)]
+        return sorted(features, key=lambda x: abs(x["value"]), reverse=True)[:5]
+    except Exception as e:
+        print(f"SHAP computation error: {e}")
+        return None
 
 # Helper function: Predict opportunity score for a single zip code
 def predict_single_zip(zip_code: str, subtype: str, price_range: float) -> Optional[dict]:
@@ -146,13 +275,19 @@ def predict_single_zip(zip_code: str, subtype: str, price_range: float) -> Optio
         else:
             rating = "Low Opportunity"
         
-        return {
+        result = {
             "zip_code": zip_code,
             "opportunity_score": round(probability, 4),
             "score_percent": score_percent,
             "rating": rating,
             "restaurant_type": f"{subtype} (Price: {'$' * int(price_range)})"
         }
+        
+        # Add SHAP values if explainer is available
+        if shap_explainer:
+            result["top_features"] = compute_shap(input_row)
+        
+        return result
     
     except Exception as e:
         print(f"Error predicting for zip {zip_code}: {e}")
