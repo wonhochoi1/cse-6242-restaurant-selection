@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Opportunity Score Analyzer</title>
+    <title>Chef's Kiss - Restaurant Location Analyzer</title>
     
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
@@ -18,7 +18,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             min-height: 100vh;
             padding: 20px;
         }
@@ -33,8 +33,8 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #333;
             padding: 30px;
             text-align: center;
         }
@@ -89,13 +89,13 @@
         .control-group select:focus,
         .control-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #333;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
         
         .analyze-btn {
             padding: 14px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             color: white;
             border: none;
             border-radius: 8px;
@@ -103,12 +103,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .analyze-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         
         .analyze-btn:disabled {
@@ -132,7 +132,7 @@
             width: 50px;
             height: 50px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid #333;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -169,12 +169,12 @@
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             color: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .stat-card .stat-value {
@@ -291,7 +291,7 @@
         .zip-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-color: #667eea;
+            border-color: #333;
         }
         
         .zip-card .zip-code {
@@ -339,9 +339,9 @@
         
         .view-btn {
             padding: 10px 20px;
-            border: 2px solid #667eea;
+            border: 2px solid #333;
             background: white;
-            color: #667eea;
+            color: #333;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -349,7 +349,7 @@
         }
         
         .view-btn.active {
-            background: #667eea;
+            background: #333;
             color: white;
         }
         
@@ -370,7 +370,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🍽️ Restaurant Opportunity Score Analyzer</h1>
+            <h1>Chef's Kiss</h1>
             <p>Predict 5-year restaurant survival probability by location</p>
         </div>
         

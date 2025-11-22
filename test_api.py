@@ -16,21 +16,21 @@ def test_health_check():
         response = requests.get(f"{API_BASE_URL}/", timeout=5)
         if response.status_code == 200:
             data = response.json()
-            print(f"   ✓ Status: {data['status']}")
-            print(f"   ✓ Model loaded: {data['model_loaded']}")
-            print(f"   ✓ Data loaded: {data['data_loaded']}")
-            print(f"   ✓ Total zip codes: {data['total_zip_codes']}")
-            print(f"   ✓ Available subtypes: {len(data['available_subtypes'])}")
+            print(f"   [OK] Status: {data['status']}")
+            print(f"   [OK] Model loaded: {data['model_loaded']}")
+            print(f"   [OK] Data loaded: {data['data_loaded']}")
+            print(f"   [OK] Total zip codes: {data['total_zip_codes']}")
+            print(f"   [OK] Available subtypes: {len(data['available_subtypes'])}")
             return True
         else:
-            print(f"   ✗ Error: Status code {response.status_code}")
+                print(f"   [ERROR] Status code {response.status_code}")
             return False
     except requests.exceptions.ConnectionError:
-        print(f"   ✗ Error: Could not connect to API at {API_BASE_URL}")
+        print(f"   [ERROR] Could not connect to API at {API_BASE_URL}")
         print(f"   Make sure the API is running with: python api.py")
         return False
     except Exception as e:
-        print(f"   ✗ Error: {e}")
+        print(f"   [ERROR] {e}")
         return False
 
 def test_predict_endpoint():
@@ -80,32 +80,32 @@ def test_predict_endpoint():
             
             if response.status_code == 200:
                 data = response.json()
-                print(f"   ✓ City: {data['city']}, {data['state']}")
-                print(f"   ✓ Restaurant: {data['subtype']} (Price: {'$' * int(data['price_range'])})")
-                print(f"   ✓ ZIP codes analyzed: {data['total_zip_codes']}")
+                print(f"   [OK] City: {data['city']}, {data['state']}")
+                print(f"   [OK] Restaurant: {data['subtype']} (Price: {'$' * int(data['price_range'])})")
+                print(f"   [OK] ZIP codes analyzed: {data['total_zip_codes']}")
                 
                 if data['zip_scores']:
                     scores = [z['score_percent'] for z in data['zip_scores']]
                     avg_score = sum(scores) / len(scores)
                     max_score = max(scores)
-                    print(f"   ✓ Average score: {avg_score:.1f}%")
-                    print(f"   ✓ Highest score: {max_score:.1f}%")
+                    print(f"   [OK] Average score: {avg_score:.1f}%")
+                    print(f"   [OK] Highest score: {max_score:.1f}%")
                     
                     # Show top 3 zip codes
                     top_zips = sorted(data['zip_scores'], key=lambda x: x['score_percent'], reverse=True)[:3]
-                    print(f"   ✓ Top 3 ZIP codes:")
+                    print(f"   [OK] Top 3 ZIP codes:")
                     for i, z in enumerate(top_zips, 1):
                         print(f"      {i}. ZIP {z['zip_code']}: {z['score_percent']}% ({z['rating']})")
                 else:
-                    print(f"   ✗ No zip scores returned")
+                    print(f"   [ERROR] No zip scores returned")
                     all_passed = False
             else:
-                print(f"   ✗ Error: Status code {response.status_code}")
+                print(f"   [ERROR] Status code {response.status_code}")
                 print(f"   Response: {response.text}")
                 all_passed = False
                 
         except Exception as e:
-            print(f"   ✗ Error: {e}")
+            print(f"   [ERROR] {e}")
             all_passed = False
     
     return all_passed
@@ -129,12 +129,12 @@ def test_invalid_requests():
         )
         
         if response.status_code == 404:
-            print(f"   ✓ Correctly rejected invalid city (404)")
+            print(f"   [OK] Correctly rejected invalid city (404)")
         else:
-            print(f"   ✗ Unexpected status code: {response.status_code}")
+            print(f"   [ERROR] Unexpected status code: {response.status_code}")
             
     except Exception as e:
-        print(f"   ✗ Error: {e}")
+        print(f"   [ERROR] {e}")
     
     # Test with invalid price range
     print("\n   Testing invalid price range...")
@@ -151,16 +151,16 @@ def test_invalid_requests():
         )
         
         if response.status_code == 422:
-            print(f"   ✓ Correctly rejected invalid price range (422)")
+            print(f"   [OK] Correctly rejected invalid price range (422)")
         else:
-            print(f"   ⚠️  Status code: {response.status_code} (expected 422)")
+            print(f"   [WARNING] Status code: {response.status_code} (expected 422)")
             
     except Exception as e:
-        print(f"   ✗ Error: {e}")
+        print(f"   [ERROR] {e}")
 
 def main():
     print("=" * 60)
-    print("Restaurant Opportunity Score API - Integration Test")
+    print("Chef's Kiss API - Integration Test")
     print("=" * 60)
     
     # Test health check
@@ -171,15 +171,15 @@ def main():
     
     # Test predict endpoint
     if test_predict_endpoint():
-        print("\n✅ Predict endpoint tests passed!")
+        print("\n[OK] Predict endpoint tests passed!")
     else:
-        print("\n⚠️  Some predict endpoint tests failed")
+        print("\n[WARNING] Some predict endpoint tests failed")
     
     # Test error handling
     test_invalid_requests()
     
     print("\n" + "=" * 60)
-    print("✅ Integration tests complete!")
+    print("[OK] Integration tests complete!")
     print("=" * 60)
     print("\nThe frontend should work correctly with the API.")
     print("Start the frontend with: cd frontend && python -m http.server 8080")

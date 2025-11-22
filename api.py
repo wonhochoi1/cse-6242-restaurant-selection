@@ -1,5 +1,5 @@
 """
-Restaurant Opportunity Score API
+Chef's Kiss API
 FastAPI backend for predicting restaurant success by location
 """
 
@@ -16,7 +16,7 @@ from constants import RESTAURANT_SUBTYPES, AVAILABLE_ZIP_CODES, get_cities, get_
 
 # FastAPI app
 app = FastAPI(
-    title="Restaurant Opportunity Score API",
+    title="Chef's Kiss API",
     description="Predict restaurant 5-year survival probability by location",
     version="1.0.0"
 )
@@ -78,7 +78,7 @@ async def load_model_and_data():
         if not model_path.exists():
             raise FileNotFoundError(f"Model file not found: {model_path}")
         model = joblib.load(model_path)
-        print(f"✓ Model loaded from {model_path}")
+        print(f"[OK] Model loaded from {model_path}")
         
         #load preprocessed data
         data_path = Path("restaurant_row_data.csv")
@@ -93,7 +93,7 @@ async def load_model_and_data():
         zip_context_df = df_final[context_cols].drop_duplicates(subset=['zip_code']).set_index('zip_code')
         print(f"Context lookup created for {len(zip_context_df)} zip codes")
         
-        print(f"✓ Constants loaded: {len(RESTAURANT_SUBTYPES)} subtypes, {len(AVAILABLE_ZIP_CODES)} zip codes")
+        print(f"[OK] Constants loaded: {len(RESTAURANT_SUBTYPES)} subtypes, {len(AVAILABLE_ZIP_CODES)} zip codes")
         
         # Initialize SHAP explainer
         try:
@@ -103,12 +103,12 @@ async def load_model_and_data():
                 background.drop(columns=['five_year_survivor'])
             )
             shap_explainer = shap.TreeExplainer(xgb_model, bg_processed)
-            print("✓ SHAP explainer initialized")
+            print("[OK] SHAP explainer initialized")
         except Exception as e:
-            print(f"⚠️  SHAP explainer not available: {e}")
+            print(f"[WARNING] SHAP explainer not available: {e}")
             shap_explainer = None
         
-        print("✓ Startup complete!")  
+        print("[OK] Startup complete!")  
     except Exception as e:
         raise
 

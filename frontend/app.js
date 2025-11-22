@@ -363,11 +363,11 @@ async function renderChoroplethMap(results, cityData) {
                 if (data.top_features && data.top_features.length > 0) {
                     tooltipHtml += `<br/><div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">`;
                     tooltipHtml += `<strong style="font-size: 11px; color: #3498db;">Why ${data.score_percent}%:</strong><br/>`;
-                    tooltipHtml += `<div style="font-size: 9px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">✓ increases • ✗ decreases opportunity</div>`;
+                    tooltipHtml += `<div style="font-size: 9px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">+ increases • - decreases opportunity</div>`;
                     
                     data.top_features.slice(0, 2).forEach(feat => {
                         const isPositive = feat.value > 0;
-                        const icon = isPositive ? '✓' : '✗';
+                        const icon = isPositive ? '+' : '-';
                         const color = isPositive ? '#2ecc71' : '#e74c3c';
                         const description = getFeatureDescription(feat.name, feat.value);
                         tooltipHtml += `<div style="font-size: 10px; margin: 3px 0; line-height: 1.3;"><span style="color: ${color}; font-weight: bold;">${icon}</span> <span style="color: rgba(255,255,255,0.9);">${description}</span></div>`;
@@ -497,7 +497,7 @@ function displaySHAP(zipData) {
     zipData.top_features.forEach(f => {
         const isPositive = f.value > 0;
         const color = isPositive ? '#27ae60' : '#e74c3c';
-        const icon = isPositive ? '✓' : '✗';
+        const icon = isPositive ? '+' : '-';
         const barWidth = Math.min(Math.abs(f.value) * 100, 100);
         const description = getFeatureDescription(f.name, f.value);
         
@@ -517,7 +517,7 @@ function displaySHAP(zipData) {
         `;
     });
     
-    html += '<div style="font-size: 8px; color: #999; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f0f0f0;">✓ = increases opportunity • ✗ = decreases opportunity</div>';
+    html += '<div style="font-size: 8px; color: #999; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f0f0f0;">+ = increases opportunity • - = decreases opportunity</div>';
     
     return html + '</div>';
 }

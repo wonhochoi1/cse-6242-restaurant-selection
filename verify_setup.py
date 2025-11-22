@@ -11,19 +11,19 @@ from pathlib import Path
 def check_file_exists(filepath, description):
     """Check if a file exists and report status"""
     if os.path.exists(filepath):
-        print(f"   ✓ {description}")
+        print(f"   [OK] {description}")
         return True
     else:
-        print(f"   ✗ {description} - NOT FOUND: {filepath}")
+        print(f"   [ERROR] {description} - NOT FOUND: {filepath}")
         return False
 
 def check_directory_exists(dirpath, description):
     """Check if a directory exists and report status"""
     if os.path.isdir(dirpath):
-        print(f"   ✓ {description}")
+        print(f"   [OK] {description}")
         return True
     else:
-        print(f"   ✗ {description} - NOT FOUND: {dirpath}")
+        print(f"   [ERROR] {description} - NOT FOUND: {dirpath}")
         return False
 
 def check_python_packages():
@@ -44,9 +44,9 @@ def check_python_packages():
     for package, name in required_packages:
         try:
             __import__(package)
-            print(f"   ✓ {name} installed")
+            print(f"   [OK] {name} installed")
         except ImportError:
-            print(f"   ✗ {name} NOT INSTALLED")
+            print(f"   [ERROR] {name} NOT INSTALLED")
             all_installed = False
     
     return all_installed
@@ -70,7 +70,7 @@ def check_frontend_files():
 
 def main():
     print("=" * 70)
-    print("Restaurant Opportunity Score Analyzer - Setup Verification")
+    print("Chef's Kiss - Setup Verification")
     print("=" * 70)
     
     all_checks_passed = True
@@ -100,9 +100,9 @@ def main():
     if not check_directory_exists('model', 'Model Directory'):
         all_checks_passed = False
     if not check_directory_exists('yelp_dataset', 'Yelp Dataset'):
-        print("   ⚠️  Warning: Yelp dataset not found (optional for inference)")
+        print("   [WARNING] Yelp dataset not found (optional for inference)")
     if not check_directory_exists('census_dataset', 'Census Dataset'):
-        print("   ⚠️  Warning: Census dataset not found (optional for inference)")
+        print("   [WARNING] Census dataset not found (optional for inference)")
     
     # Check 4: Frontend files
     if not check_frontend_files():
@@ -121,7 +121,7 @@ def main():
     # Final report
     print("\n" + "=" * 70)
     if all_checks_passed:
-        print("✅ All essential checks passed!")
+        print("[OK] All essential checks passed!")
         print("\nYou're ready to start the application:")
         print("\n  Option 1 (Easy): Run the startup script")
         print("    Mac/Linux: ./start_app.sh")
